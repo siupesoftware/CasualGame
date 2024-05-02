@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elemento Aleatório</title>
+<style>
+    #elemento {
+        width: 400px;
+        height: 400px;
+        background-color: red;
+        position: absolute;
+    }
+</style>
+</head>
+<body>
+ 
+  <button id="resetButton">Reset Score</button>
+  <div id="score">Score: 0</div>
+  <div id="level">Level: 1</div>
+  <div id="gameOver" style="display: none;">Game Over</div>
+  <div id="finalScore" style="display: none;"></div>
+  <img id="elemento" src="balao.png">
+  
+  <audio id="audio" src="balao.mp3"></audio>
+     
+<script>
+    let gameOver = false;
+
+    function moverElementoAleatoriamente() {
+        if (!gameOver) {
+            var elemento = document.getElementById('elemento');
+            var larguraJanela = window.innerWidth;
+            var alturaJanela = window.innerHeight;
+            var novaPosicaoX = Math.random() * (larguraJanela - 100);
+            var novaPosicaoY = Math.random() * (alturaJanela - 100);
+            elemento.style.left = novaPosicaoX + 'px';
+            elemento.style.top = novaPosicaoY + 'px';
+        }
+    }
+    moverElementoAleatoriamente(); // Para posicionar o elemento aleatoriamente inicialmente
+
+    // Atualizar a posição do elemento periodicamente
+    setInterval(moverElementoAleatoriamente, 1000); // Altera a cada 3 segundos, por exemplo
+  
+    // Obtenha referências aos elementos HTML
+    const playButton = document.getElementById('elemento');
+    const audio = document.getElementById('audio');
+    const scoreDisplay = document.getElementById('score');
+    const levelDisplay = document.getElementById('level');
+    const resetButton = document.getElementById('resetButton');
+    const gameOverDisplay = document.getElementById('gameOver');
+    const finalScoreDisplay = document.getElementById('finalScore');
+  
+    // Load score and level from local storage
+    let score = parseInt(localStorage.getItem('score')) || 0;
+    let level = parseInt(localStorage.getItem('level')) || 1;
+    scoreDisplay.innerText = "Score: " + score;
+    levelDisplay.innerText = "Level: " + level;
+
+    // Adicione um evento de clique ao botão
+    playButton.addEventListener('click', () => {
+        if (!gameOver) {
+            audio.play();
+            score++; // Increment the score
+            scoreDisplay.innerText = "Score: " + score; // Update the score display
+            updateLevel(); // Check if level needs to be updated
+            checkGameOver(); // Check if game over condition is met
+
+            // Save score and level to local storage
+            localStorage.setItem('score', score);
+            localStorage.setItem('level', level);
+        }
+    });
+
+    resetButton.addEventListener('click', () => {
+        score = 0; // Reset the score
+        level = 1; // Reset the level
+        scoreDisplay.innerText = "Score: " + score; // Update the score display
+        levelDisplay.innerText = "Level: " + level; // Update the level display
+        gameOver = false; // Reset the game over flag
+        gameOverDisplay.style.display = "none"; // Hide game over message
+        finalScoreDisplay.style.display = "none"; // Hide final score message
+
+        // Save score and level to local storage
+        localStorage.setItem('score', score);
+        localStorage.setItem('level', level);
+    });
+
+    function updateLevel() {
+        if (score % 10 === 0 && score !== 0) {
+            level++; // Increase the level
+            levelDisplay.innerText = "Level: " + level; // Update the level display
+        }
+    }
+
+    function checkGameOver() {
+        if (score >= 50) { // Example game over condition
+            gameOver = true;
+            gameOverDisplay.style.display = "block"; // Show game over message
+            finalScoreDisplay.innerText = "Final Score: " + score; // Display final score
+            finalScoreDisplay.style.display = "block"; // Show final score message
+        }
+    }
+</script>
+</body>
+</html>
